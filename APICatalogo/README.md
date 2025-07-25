@@ -1,4 +1,4 @@
-﻿# 📦 Projeto Catálogo de Produtos
+﻿# 📦 Projeto Catálogo de Produtos e Categorias
 
 API construída com **ASP.NET Core 8**, **Entity Framework Core 8** e **MySQL** como banco de dados relacional.
 

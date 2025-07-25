@@ -4,7 +4,7 @@ API construída com **ASP.NET Core 8**, **Entity Framework Core 8** e **MySQL** 
 
 ---
 
-## 📚 Tecnologias utilizadas
+## 📚 Tecnologias utilizadas.
 
 - ASP.NET Core 8
 - Entity Framework Core 8

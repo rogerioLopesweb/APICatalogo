@@ -3,6 +3,7 @@ using APICatalogo.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace APICatalogo.Controllers
 {
@@ -17,11 +18,11 @@ namespace APICatalogo.Controllers
             _context = context;
         }
         [HttpGet]
-        public ActionResult<IEnumerable<Produto>> Get()
+        public async Task<ActionResult<IEnumerable<Produto>>> Get()
         {
             try
             {
-                var produtos = _context.Produtos.AsNoTracking().ToList();
+                var produtos = await _context.Produtos.AsNoTracking().ToListAsync();
                 if (produtos == null || !produtos.Any())
                 {
                     return NotFound("Produtos não encontrados...");
@@ -37,11 +38,11 @@ namespace APICatalogo.Controllers
             
         }
         [HttpGet("{id:guid}")]
-        public ActionResult<Produto> Get(Guid id)
+        public async Task<ActionResult<Produto>> Get(Guid id)
         {
             try
             {
-                var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
+                var produto = await _context.Produtos.FirstOrDefaultAsync(p => p.ProdutoId == id);
                 if (produto == null)
                 {
                     return NotFound("Produto não encontrado...");
@@ -55,7 +56,7 @@ namespace APICatalogo.Controllers
             }
         }
         [HttpPost("{id:guid}")]
-        public ActionResult Post(Produto produto)
+        public async Task<ActionResult> Post(Produto produto)
         {
             try
             {
@@ -63,7 +64,7 @@ namespace APICatalogo.Controllers
                 {
                     return BadRequest("Produto inválido...");
                 }
-                _context.Produtos.Add(produto);
+                await _context.Produtos.AddAsync(produto);
                 _context.SaveChanges();
                 return CreatedAtAction(nameof(Get), new { id = produto.ProdutoId }, produto);
             }
@@ -73,7 +74,7 @@ namespace APICatalogo.Controllers
             }
         }
         [HttpPut]
-        public ActionResult Put(Guid id, Produto produto)
+        public async Task<ActionResult> Put(Guid id, Produto produto)
         {
             try
             {
@@ -85,13 +86,13 @@ namespace APICatalogo.Controllers
                 {
                     return BadRequest("Produto inválido...");
                 }
-                var produtoExistente = _context.Produtos.FirstOrDefault(p => p.ProdutoId == produto.ProdutoId);
+                var produtoExistente = await _context.Produtos.FirstOrDefaultAsync(p => p.ProdutoId == produto.ProdutoId);
                 if (produtoExistente == null)
                 {
                     return NotFound("Produto não encontrado...");
                 }
                 _context.Entry(produtoExistente).CurrentValues.SetValues(produto);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return Ok(produto);
             }
             catch (Exception)
@@ -102,17 +103,17 @@ namespace APICatalogo.Controllers
         }
 
         [HttpDelete("{id:guid}")]
-        public ActionResult Delete(Guid id)
+        public async Task<ActionResult> Delete(Guid id)
         {
             try
             {
-                var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
+                var produto = await _context.Produtos.FirstOrDefaultAsync(p => p.ProdutoId == id);
                 if (produto == null)
                 {
                     return NotFound("Produto não encontrado...");
                 }
                 _context.Produtos.Remove(produto);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return NoContent();
             }
             catch (Exception)

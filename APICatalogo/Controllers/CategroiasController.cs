@@ -3,6 +3,7 @@ using APICatalogo.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace APICatalogo.Controllers
 {
@@ -17,9 +18,9 @@ namespace APICatalogo.Controllers
         }
 
         [HttpGet("produtos")]
-        public ActionResult<IEnumerable<Categoria>> GetCategoriasProdutos()
+        public async Task<ActionResult<IEnumerable<Categoria>>> GetCategoriasProdutos()
         {
-            var categorias = _context.Categorias.Include(p=> p.Produtos).ToList();
+            var categorias = await _context.Categorias.Include(p=> p.Produtos).ToListAsync();
             if (categorias.Count == 0)
             {
                 return NotFound("Categorias não encontradas...");
@@ -28,9 +29,9 @@ namespace APICatalogo.Controllers
         }
 
         [HttpGet("lista")]
-        public ActionResult<IEnumerable<Categoria>> Get()
+        public async Task<ActionResult<IEnumerable<Categoria>>> Get()
         {
-            var categorias = _context.Categorias.AsNoTracking().ToList();
+            var categorias = await _context.Categorias.AsNoTracking().ToListAsync();
             if (categorias.Count == 0)
             {
                 return NotFound("Categorias não encontradas...");
@@ -41,11 +42,11 @@ namespace APICatalogo.Controllers
 
 
         [HttpGet("{id:Guid}", Name = "obterCategoria")]
-        public ActionResult<Categoria> Get(Guid id)
+        public async Task<ActionResult<Categoria>> Get(Guid id)
         {
             try
             {
-                var categoria = _context.Categorias.FirstOrDefault(p => p.CategoriaId == id);
+                var categoria = await _context.Categorias.FirstOrDefaultAsync(p => p.CategoriaId == id);
                 if (categoria == null)
                 {
                     return NotFound("Categorias não encontradas...");
@@ -60,7 +61,7 @@ namespace APICatalogo.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post(Categoria categoria)
+        public async Task<ActionResult> Post(Categoria categoria)
         {
             try
             {
@@ -68,9 +69,9 @@ namespace APICatalogo.Controllers
                 {
                     return BadRequest("Categoria inválida...");
                 }
-                _context.Categorias.Add(categoria);
-                _context.SaveChanges();
-                return CreatedAtRoute("obterCategoria", new { id = categoria.CategoriaId }, categoria);
+               await _context.Categorias.AddAsync(categoria);
+               await _context.SaveChangesAsync();
+               return CreatedAtRoute("obterCategoria", new { id = categoria.CategoriaId }, categoria);
             }
             catch (Exception)
             {
@@ -81,17 +82,17 @@ namespace APICatalogo.Controllers
         }
 
         [HttpDelete("{id:Guid}")]
-        public ActionResult Delete(Guid id)
+        public async Task<ActionResult> Delete(Guid id)
         {
             try
             {
-                var categoria = _context.Categorias.FirstOrDefault(p => p.CategoriaId == id);
+                var categoria = await _context.Categorias.FirstOrDefaultAsync(p => p.CategoriaId == id);
                 if (categoria == null)
                 {
                     return NotFound("Categoria não encontrada...");
                 }
                 _context.Categorias.Remove(categoria);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return Ok("Categoria removida com sucesso...");
             }
             catch (Exception)
